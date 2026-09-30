@@ -1,0 +1,853 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Marks Management</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffd9c7;
+            color: #333;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1150px;
+            margin: 35px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #6d3427;
+            margin-bottom: 25px;
+        }
+
+        .box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #7a3e2f;
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            margin-top: 15px;
+            background-color: #7a3e2f;
+        }
+
+        .add-btn:hover {
+            background-color: #5d2e24;
+        }
+
+        .update-btn {
+            background-color: #f0ad4e;
+        }
+
+        .view-btn {
+            background-color: #5cb85c;
+        }
+
+        .cancel-btn {
+            background-color: #888;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .search-row input {
+            width: 220px;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        #updateBox {
+            display: none;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f4b39a;
+            color: #5a2d22;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 11px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #fff5ef;
+        }
+
+        .edit-btn {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            background-color: #f0ad4e;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff5ef;
+            border-radius: 8px;
+        }
+
+        .result-box p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-row input,
+            .search-row button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>Marks Management</h1>
+
+
+    <!-- ADD MARKS -->
+
+    <div class="box">
+
+        <h2>Add Marks</h2>
+
+        <form id="marksForm">
+
+            <div class="form-grid">
+
+                <input
+                    type="number"
+                    id="student_id"
+                    placeholder="Student ID"
+                    min="1"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="course_id"
+                    placeholder="Course ID"
+                    min="1"
+                    required
+                >
+
+                <input
+                    type="text"
+                    id="subject"
+                    placeholder="Subject"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="marks"
+                    placeholder="Marks"
+                    min="0"
+                    required
+                >
+
+                <input
+                    type="number"
+                    id="max_marks"
+                    placeholder="Maximum Marks"
+                    min="1"
+                    required
+                >
+
+            </div>
+
+            <button
+                type="submit"
+                class="add-btn"
+            >
+                Add Marks
+            </button>
+
+        </form>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- UPDATE MARKS -->
+
+    <div
+        class="box"
+        id="updateBox"
+    >
+
+        <h2>Update Marks</h2>
+
+        <input
+            type="hidden"
+            id="update_id"
+        >
+
+        <div class="form-grid">
+
+            <input
+                type="number"
+                id="update_marks"
+                placeholder="Marks"
+                min="0"
+            >
+
+            <input
+                type="number"
+                id="update_max_marks"
+                placeholder="Maximum Marks"
+                min="1"
+            >
+
+        </div>
+
+        <button
+            class="update-btn"
+            onclick="updateMarks()"
+        >
+            Update Marks
+        </button>
+
+        <button
+            class="cancel-btn"
+            onclick="cancelUpdate()"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+
+    <!-- GET STUDENT MARKS -->
+
+    <div class="box">
+
+        <h2>Student Marks</h2>
+
+        <div class="search-row">
+
+            <input
+                type="number"
+                id="search_student_id"
+                placeholder="Student ID"
+                min="1"
+            >
+
+            <button
+                class="view-btn"
+                onclick="getStudentMarks()"
+            >
+                View Marks
+            </button>
+
+            <button
+                class="view-btn"
+                onclick="getStudentResult()"
+            >
+                View Result
+            </button>
+
+        </div>
+
+        <div
+            id="marksTable"
+            class="table-container"
+        ></div>
+
+        <div
+            id="resultBox"
+            class="result-box"
+            style="display:none;"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+// ------------------------------------
+// ADD MARKS
+// ------------------------------------
+
+document
+    .getElementById("marksForm")
+    .addEventListener("submit", function(event) {
+
+        event.preventDefault();
+
+        const data = {
+
+            student_id:
+                parseInt(
+                    document.getElementById(
+                        "student_id"
+                    ).value
+                ),
+
+            course_id:
+                parseInt(
+                    document.getElementById(
+                        "course_id"
+                    ).value
+                ),
+
+            subject:
+                document.getElementById(
+                    "subject"
+                ).value,
+
+            marks:
+                parseInt(
+                    document.getElementById(
+                        "marks"
+                    ).value
+                ),
+
+            max_marks:
+                parseInt(
+                    document.getElementById(
+                        "max_marks"
+                    ).value
+                )
+        };
+
+
+        fetch("/marks", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(data)
+
+        })
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            const message =
+                document.getElementById(
+                    "message"
+                );
+
+            if (data.error) {
+
+                message.innerText =
+                    data.error;
+
+            } else {
+
+                message.innerText =
+                    data.message;
+
+                document
+                    .getElementById(
+                        "marksForm"
+                    )
+                    .reset();
+
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+            document.getElementById(
+                "message"
+            ).innerText =
+                "Unable to add marks";
+
+        });
+
+    });
+
+
+// ------------------------------------
+// GET STUDENT MARKS
+// ------------------------------------
+
+function getStudentMarks() {
+
+    const studentId =
+        document.getElementById(
+            "search_student_id"
+        ).value;
+
+
+    if (!studentId) {
+
+        alert("Please enter Student ID");
+
+        return;
+    }
+
+
+    fetch(
+        "/students/"
+        + studentId
+        + "/marks"
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+        }
+
+        displayMarks(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to get marks");
+
+    });
+
+}
+
+
+// ------------------------------------
+// DISPLAY MARKS
+// ------------------------------------
+
+function displayMarks(data) {
+
+    const container =
+        document.getElementById(
+            "marksTable"
+        );
+
+
+    if (data.length === 0) {
+
+        container.innerHTML =
+            "<p class='no-data'>No marks found</p>";
+
+        return;
+    }
+
+
+    let html = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>ID</th>
+
+                    <th>Course</th>
+
+                    <th>Code</th>
+
+                    <th>Subject</th>
+
+                    <th>Marks</th>
+
+                    <th>Maximum</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+    `;
+
+
+    data.forEach(item => {
+
+        html += `
+
+            <tr>
+
+                <td>${item.id}</td>
+
+                <td>${item.course_name}</td>
+
+                <td>${item.course_code}</td>
+
+                <td>${item.subject}</td>
+
+                <td>${item.marks}</td>
+
+                <td>${item.max_marks}</td>
+
+                <td>
+
+                    <button
+                        class="edit-btn"
+                        onclick="showUpdate(
+                            ${item.id},
+                            ${item.marks},
+                            ${item.max_marks}
+                        )"
+                        title="Edit"
+                    >
+                        ✏
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
+
+
+    container.innerHTML = html;
+
+}
+
+
+// ------------------------------------
+// SHOW UPDATE FORM
+// ------------------------------------
+
+function showUpdate(id, marks, maxMarks) {
+
+    document.getElementById(
+        "update_id"
+    ).value = id;
+
+    document.getElementById(
+        "update_marks"
+    ).value = marks;
+
+    document.getElementById(
+        "update_max_marks"
+    ).value = maxMarks;
+
+    document.getElementById(
+        "updateBox"
+    ).style.display = "block";
+
+}
+
+
+// ------------------------------------
+// UPDATE MARKS
+// ------------------------------------
+
+function updateMarks() {
+
+    const id =
+        document.getElementById(
+            "update_id"
+        ).value;
+
+    const marks =
+        document.getElementById(
+            "update_marks"
+        ).value;
+
+    const maxMarks =
+        document.getElementById(
+            "update_max_marks"
+        ).value;
+
+
+    if (!marks || !maxMarks) {
+
+        alert("Please enter marks and maximum marks");
+
+        return;
+    }
+
+
+    const data = {
+
+        marks: parseInt(marks),
+
+        max_marks: parseInt(maxMarks)
+
+    };
+
+
+    fetch(
+        "/marks/" + id,
+        {
+
+            method: "PUT",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+            body: JSON.stringify(data)
+
+        }
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+        } else {
+
+            alert(data.message);
+
+            cancelUpdate();
+
+            getStudentMarks();
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to update marks");
+
+    });
+
+}
+
+
+// ------------------------------------
+// CANCEL UPDATE
+// ------------------------------------
+
+function cancelUpdate() {
+
+    document.getElementById(
+        "updateBox"
+    ).style.display = "none";
+
+}
+
+
+// ------------------------------------
+// GET STUDENT RESULT
+// ------------------------------------
+
+function getStudentResult() {
+
+    const studentId =
+        document.getElementById(
+            "search_student_id"
+        ).value;
+
+
+    if (!studentId) {
+
+        alert("Please enter Student ID");
+
+        return;
+    }
+
+
+    fetch(
+        "/students/"
+        + studentId
+        + "/result"
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+        }
+
+        displayResult(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to get result");
+
+    });
+
+}
+
+
+// ------------------------------------
+// DISPLAY RESULT
+// ------------------------------------
+
+function displayResult(data) {
+
+    const resultBox =
+        document.getElementById(
+            "resultBox"
+        );
+
+
+    resultBox.style.display = "block";
+
+
+    resultBox.innerHTML = `
+
+        <h2>Student Result</h2>
+
+        <p>
+            <strong>Student ID:</strong>
+            ${data.student_id}
+        </p>
+
+        <p>
+            <strong>Total Marks:</strong>
+            ${data.total_marks}
+        </p>
+
+        <p>
+            <strong>Maximum Marks:</strong>
+            ${data.maximum_marks}
+        </p>
+
+        <p>
+            <strong>Percentage:</strong>
+            ${data.percentage}%
+        </p>
+
+        <p>
+            <strong>Grade:</strong>
+            ${data.grade}
+        </p>
+
+    `;
+
+}
+
+</script>
+
+</body>
+
+</html>
+

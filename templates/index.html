@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Management System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffd9c7;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 60px auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: #6d3427;
+            margin-bottom: 40px;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            width: 200px;
+            padding: 30px 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h2 {
+            color: #7a3e2f;
+            margin-bottom: 20px;
+        }
+
+        .card a {
+            display: inline-block;
+            text-decoration: none;
+            background-color: #7a3e2f;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+        }
+
+        .card a:hover {
+            background-color: #5d2e24;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Student Management System</h1>
+
+        <div class="cards">
+
+            <div class="card">
+                <h2>Student</h2>
+                <a href="/students">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>Course</h2>
+                <a href="/courses">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>Enrollment</h2>
+                <a href="/enrollments">Open</a>
+            </div>
+
+            <div class="card">
+                <h2>Marks</h2>
+                <a href="/marks">Open</a>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

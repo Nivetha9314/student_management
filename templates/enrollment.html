@@ -1,0 +1,733 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Enrollment Management</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #ffd9c7;
+            color: #333;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 35px auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #6d3427;
+            margin-bottom: 25px;
+        }
+
+        .box {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #7a3e2f;
+            margin-top: 0;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 220px;
+        }
+
+        select {
+            width: 150px;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .enroll-btn {
+            background-color: #7a3e2f;
+        }
+
+        .student-btn,
+        .course-btn {
+            background-color: #5cb85c;
+        }
+
+        .update-btn {
+            background-color: #f0ad4e;
+        }
+
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #f4b39a;
+            color: #5a2d22;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 11px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #fff5ef;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input,
+            select,
+            button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>Enrollment Management</h1>
+
+
+    <!-- ADD ENROLLMENT -->
+
+    <div class="box">
+
+        <h2>Add Enrollment</h2>
+
+        <div class="form-row">
+
+            <input
+                type="number"
+                id="student_id"
+                placeholder="Student ID"
+                min="1"
+            >
+
+            <input
+                type="number"
+                id="course_id"
+                placeholder="Course ID"
+                min="1"
+            >
+
+            <button
+                class="enroll-btn"
+                onclick="addEnrollment()"
+            >
+                Enroll
+            </button>
+
+        </div>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- STUDENT COURSES -->
+
+    <div class="box">
+
+        <h2>Get Student's Courses</h2>
+
+        <div class="form-row">
+
+            <input
+                type="number"
+                id="search_student_id"
+                placeholder="Student ID"
+                min="1"
+            >
+
+            <button
+                class="student-btn"
+                onclick="getStudentCourses()"
+            >
+                View Courses
+            </button>
+
+        </div>
+
+        <div
+            id="studentCoursesTable"
+            class="table-container"
+        ></div>
+
+    </div>
+
+
+    <!-- COURSE STUDENTS -->
+
+    <div class="box">
+
+        <h2>Get Course's Students</h2>
+
+        <div class="form-row">
+
+            <input
+                type="number"
+                id="search_course_id"
+                placeholder="Course ID"
+                min="1"
+            >
+
+            <button
+                class="course-btn"
+                onclick="getCourseStudents()"
+            >
+                View Students
+            </button>
+
+        </div>
+
+        <div
+            id="courseStudentsTable"
+            class="table-container"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+// ------------------------------------
+// ADD ENROLLMENT
+// ------------------------------------
+
+function addEnrollment() {
+
+    const studentId =
+        document.getElementById("student_id").value;
+
+    const courseId =
+        document.getElementById("course_id").value;
+
+    const message =
+        document.getElementById("message");
+
+
+    if (!studentId || !courseId) {
+
+        message.innerText =
+            "Please enter Student ID and Course ID";
+
+        return;
+    }
+
+
+    const enrollment = {
+
+        student_id: parseInt(studentId),
+
+        course_id: parseInt(courseId)
+
+    };
+
+
+    fetch("/enrollments", {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(enrollment)
+
+    })
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            message.innerText = data.error;
+
+        } else {
+
+            message.innerText = data.message;
+
+            document.getElementById(
+                "student_id"
+            ).value = "";
+
+            document.getElementById(
+                "course_id"
+            ).value = "";
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        message.innerText =
+            "Unable to add enrollment";
+
+    });
+
+}
+
+
+// ------------------------------------
+// GET STUDENT COURSES
+// ------------------------------------
+
+function getStudentCourses() {
+
+    const studentId =
+        document.getElementById(
+            "search_student_id"
+        ).value;
+
+
+    if (!studentId) {
+
+        alert("Please enter Student ID");
+
+        return;
+    }
+
+
+    fetch(
+        "/students/"
+        + studentId
+        + "/courses"
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+        }
+
+        displayStudentCourses(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to get student's courses");
+
+    });
+
+}
+
+
+// ------------------------------------
+// DISPLAY STUDENT COURSES
+// ------------------------------------
+
+function displayStudentCourses(data) {
+
+    const container =
+        document.getElementById(
+            "studentCoursesTable"
+        );
+
+
+    if (data.length === 0) {
+
+        container.innerHTML =
+            "<p class='no-data'>No courses found</p>";
+
+        return;
+    }
+
+
+    let html = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Course ID</th>
+
+                    <th>Course Name</th>
+
+                    <th>Course Code</th>
+
+                    <th>Duration</th>
+
+                    <th>Fee</th>
+
+                    <th>Enrollment Date</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+    `;
+
+
+    data.forEach(course => {
+
+        html += `
+
+            <tr>
+
+                <td>${course.course_id}</td>
+
+                <td>${course.course_name}</td>
+
+                <td>${course.course_code}</td>
+
+                <td>${course.duration}</td>
+
+                <td>₹${course.fee}</td>
+
+                <td>${course.enrollment_date}</td>
+
+                <td>
+
+                    <select
+                        id="status_${course.course_id}"
+                    >
+
+                        <option
+                            value="Active"
+                            ${course.status === "Active" ? "selected" : ""}
+                        >
+                            Active
+                        </option>
+
+                        <option
+                            value="Completed"
+                            ${course.status === "Completed" ? "selected" : ""}
+                        >
+                            Completed
+                        </option>
+
+                    </select>
+
+                </td>
+
+                <td>
+
+                    <button
+                        class="update-btn"
+                        onclick="updateStatus(${course.course_id})"
+                    >
+                        Update
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
+
+
+    container.innerHTML = html;
+
+}
+
+
+// ------------------------------------
+// UPDATE STATUS
+// ------------------------------------
+
+function updateStatus(enrollmentId) {
+
+    const status =
+        document.getElementById(
+            "status_" + enrollmentId
+        ).value;
+
+
+    fetch(
+        "/enrollments/" + enrollmentId,
+        {
+
+            method: "PUT",
+
+            headers: {
+
+                "Content-Type":
+                    "application/json"
+
+            },
+
+            body: JSON.stringify({
+
+                status: status
+
+            })
+
+        }
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+        } else {
+
+            alert(data.message);
+
+        }
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to update status");
+
+    });
+
+}
+
+
+// ------------------------------------
+// GET COURSE STUDENTS
+// ------------------------------------
+
+function getCourseStudents() {
+
+    const courseId =
+        document.getElementById(
+            "search_course_id"
+        ).value;
+
+
+    if (!courseId) {
+
+        alert("Please enter Course ID");
+
+        return;
+    }
+
+
+    fetch(
+        "/courses/"
+        + courseId
+        + "/students"
+    )
+
+    .then(response => response.json())
+
+    .then(data => {
+
+        if (data.error) {
+
+            alert(data.error);
+
+            return;
+        }
+
+        displayCourseStudents(data);
+
+    })
+
+    .catch(error => {
+
+        console.error(error);
+
+        alert("Unable to get course's students");
+
+    });
+
+}
+
+
+// ------------------------------------
+// DISPLAY COURSE STUDENTS
+// ------------------------------------
+
+function displayCourseStudents(data) {
+
+    const container =
+        document.getElementById(
+            "courseStudentsTable"
+        );
+
+
+    if (data.length === 0) {
+
+        container.innerHTML =
+            "<p class='no-data'>No students found</p>";
+
+        return;
+    }
+
+
+    let html = `
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Student ID</th>
+
+                    <th>Name</th>
+
+                    <th>Email</th>
+
+                    <th>Phone</th>
+
+                    <th>Enrollment Date</th>
+
+                    <th>Status</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+    `;
+
+
+    data.forEach(student => {
+
+        html += `
+
+            <tr>
+
+                <td>${student.student_id}</td>
+
+                <td>${student.name}</td>
+
+                <td>${student.email}</td>
+
+                <td>${student.phone}</td>
+
+                <td>${student.enrollment_date}</td>
+
+                <td>${student.status}</td>
+
+            </tr>
+
+        `;
+
+    });
+
+
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
+
+
+    container.innerHTML = html;
+
+}
+
+</script>
+
+</body>
+
+</html>
+
